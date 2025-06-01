@@ -1,0 +1,32 @@
+
+# parameters for board and session
+args: 
+    timeout: 0
+    ip_address: 127.0.0.1
+    ip_port: 6677
+    board_id: 2         # required!
+    master_board: 0
+    serial_port:  COM10  # Mac: /dev/cu.usbserial-DM00D7TW
+    streamer_params:
+    name: Cyton       # required!
+    data_type:          # required!
+        - EEG
+        - stim
+
+    
+    channel_names: 
+        EEG: Fp1, Fp2, F3, F4, T3, C3, Cz, C4, T4, T5, P3, Pz, P4, T6, O1, O2
+        stim: P11, P12, P17      # required if used
+    
+    uid: brainflow      # required!
+    daisy_attached: yes # yes- Daisy is physically attached to Cyton; no- no Daisy
+    max_time: 7200      # required (in seconds)!  if unlimited time needed, use some huge number here e.g. 360000 (100h)
+    delay: 0
+
+
+# commands sent to board; if you use Daisy, uncomment channels 9-16
+commands: 
+    # defaultMode: d
+    chan1_8: x1060110Xx2060110Xx3060110Xx4060110Xx5060110Xx6060110Xx7060110Xx8060110X 
+    chan9_16: xQ060110XxW060110XxE060110XxR060110XxT060110XxY060110XxU060110XxI060110X  # Comment this line if using Cyton without Daisy
+    digitalMode: /3
