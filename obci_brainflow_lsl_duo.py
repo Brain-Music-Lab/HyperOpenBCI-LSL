@@ -1,18 +1,17 @@
 # obci_brainflow_lsl.py
 '''
-Author: Marcin Lesniak @marles77 https://github.com/marles77/openbci-brainflow-lsl
-Open BCI + BrainFlow + LSL
-Use BrainFlow to read data from Open BCI board and send it as LSL streams.
-This program is based on a script originally created by Richard Waltman  @retiutut
-(OpenBCI): https://github.com/OpenBCI/OpenBCI_GUI/tree/master/Networking-Test-Kit/LSL
+Author: Thiago Rossi Roque @thiago-roque07
+Hyper OpenBCI - Use BrainFlow to read data from two OpenBCI boards simultaneously and send it as LSL streams.
+
+This program is based on scripts originally created by @retiutut and @marles77.
+https://github.com/OpenBCI/OpenBCI_GUI/tree/master/Networking-Test-Kit/LSL
+https://github.com/marles77/openbci-brainflow-lsl
 
 Install dependencies with:
 pip install --upgrade numpy brainflow pylsl pyserial PyYAML 
 
-This has only been tested with Cyton + Dongle and Cyton + Daisy + Dongle, for now.
-
 Use:
-python obci_brainflow_lsl.py --set settings8.yml
+python obci_brainflow_lsl_duo.py --set cyton_1.yml cyton_2.yml
 '''
 
 import yaml
@@ -147,8 +146,6 @@ def manage_settings_data(data):
     return args, chan_commands
 
 
-
-
 def collect_cont(board, args, srate, outlet, fw_delay):
     '''Collects continuous data with brainflow and sends it via LSL'''
     
@@ -186,11 +183,10 @@ def collect_cont(board, args, srate, outlet, fw_delay):
 
         time.sleep(1)
 
-    #print("Stopped collecting data")
+
 
 
 # ==== main function ====
-
 def main(argv):
     '''Takes args and initiates streaming''' 
 
@@ -227,40 +223,10 @@ def main(argv):
     params_OBCI_1.ip_address = args_OBCI_1['ip_address']
     board_OBCI_1 = BoardShim(args_OBCI_1['board_id'], params_OBCI_1)
     
-
     params_OBCI_2 = BrainFlowInputParams()
     params_OBCI_2.serial_port = args_OBCI_2['serial_port']
     params_OBCI_2.ip_address = args_OBCI_2['ip_address']
     board_OBCI_2 = BoardShim(args_OBCI_2['board_id'], params_OBCI_2)
-
-    
-    
-    # # LSL internal outlet (stream form board) configuration and initialization 
-    # channel_names_OBCI_1 = {}; n_channels_OBCI_1 = {}; srate_OBCI_1 = {}; info_OBCI_1 = {}; outlet_int_OBCI_1 = {}; fw_delay_OBCI_1 = {}
-    # for type in args_OBCI_1['data_type']:
-    #     channel_names_OBCI_1[type] = args_OBCI_1['channel_names'][type].split(',')
-    #     n_channels_OBCI_1[type] = len(channel_names_OBCI_1[type])
-    #     srate_OBCI_1[type] = board_OBCI_1.get_sampling_rate(args_OBCI_1['board_id'])
-    #     name_OBCI_1 = args_OBCI_1['name'] + "_" + type + "_" + args_OBCI_1['serial_port']
-    #     uid = args_OBCI_1['uid'] + "_" + type + "_" + args_OBCI_1['serial_port']
-    #     info_OBCI_1[type] = StreamInfo(name_OBCI_1, type, n_channels_OBCI_1[type], srate_OBCI_1[type], 'double64', uid)
-    #     # add channel labels
-    #     chans_OBCI_1 = info_OBCI_1[type].desc().append_child("channels")
-    #     for label in channel_names_OBCI_1[type]:
-    #         chan_OBCI_1 = chans_OBCI_1.append_child("channel")
-    #         chan_OBCI_1.append_child_value("label", label)
-    #     outlet_int_OBCI_1[type] = StreamOutlet(info_OBCI_1[type])
-    #     fw_delay_OBCI_1[type] = args_OBCI_1['delay']
-
-    # # prepare session; exit if board is not ready
-    # try:
-    #     board_OBCI_1.prepare_session()
-    # except brainflow.board_shim.BrainFlowError as e:
-    #     print(CRED + f"Error: {e}" + CEND)
-        
-    #     print("The end")
-    #     time.sleep(1)
-    #     sys.exit()
 
     # LSL internal outlet (stream from board) configuration and initialization 
     # Combine channel names and count total channels
@@ -297,34 +263,6 @@ def main(argv):
         sys.exit()
 
 
-    # # LSL internal outlet (stream form board) configuration and initialization 
-    # channel_names_OBCI_2 = {}; n_channels_OBCI_2 = {}; srate_OBCI_2 = {}; info_OBCI_2 = {}; outlet_int_OBCI_2 = {}; fw_delay_OBCI_2 = {}
-    # for type in args_OBCI_2['data_type']:
-    #     channel_names_OBCI_2[type] = args_OBCI_2['channel_names'][type].split(',')
-    #     n_channels_OBCI_2[type] = len(channel_names_OBCI_2[type])
-    #     srate_OBCI_2[type] = board_OBCI_2.get_sampling_rate(args_OBCI_2['board_id'])
-    #     name_OBCI_2 = args_OBCI_2['name'] + "_" + type + "_" + args_OBCI_2['serial_port']
-    #     uid = args_OBCI_2['uid'] + "_" + type + "_" + args_OBCI_2['serial_port']
-    #     info_OBCI_2[type] = StreamInfo(name_OBCI_2, type, n_channels_OBCI_2[type], srate_OBCI_2[type], 'double64', uid)
-    #     # add channel labels
-    #     chans_OBCI_2 = info_OBCI_2[type].desc().append_child("channels")
-    #     for label in channel_names_OBCI_2[type]:
-    #         chan_OBCI_2 = chans_OBCI_2.append_child("channel")
-    #         chan_OBCI_2.append_child_value("label", label)
-    #     outlet_int_OBCI_2[type] = StreamOutlet(info_OBCI_2[type])
-    #     fw_delay_OBCI_2[type] = args_OBCI_2['delay']
-    
-    # # prepare session; exit if board is not ready
-    # try:
-    #     board_OBCI_2.prepare_session()
-    # except brainflow.board_shim.BrainFlowError as e:
-    #     print(CRED + f"Error: {e}" + CEND)
-    
-    #     print("The end")
-    #     time.sleep(1)
-    #     sys.exit()
-
-    
     # LSL internal outlet (stream from board) configuration and initialization 
     # Combine channel names and count total channels
     channel_names_OBCI_2 = []
@@ -358,8 +296,6 @@ def main(argv):
         print("The end")
         time.sleep(1)
         sys.exit()
-        
-    # user_choice("Send commands to board? 'y' -> yes, 'q' -> quit\n--> ", boards = [board_OBCI_1, board_OBCI_2])
 
     # iterate over channel commands, send one and wait for a response from board
     # to restore default channel settings 'd' can be sent
@@ -388,13 +324,6 @@ def main(argv):
         
     # show stream configuration and wait until user accepts or quits
     print(50 * "-")
-    # for type in args_OBCI_1['data_type']:
-    #     print(f"{type}:\nNumber of channels: {n_channels_OBCI_1[type]}\nSampling rate: {srate_OBCI_1[type]}\n"
-    #         f"Time limit: {args_OBCI_1['max_time'] // 60} min. {args_OBCI_1['max_time'] % 60} sec.\n")
-    
-    # for type in args_OBCI_2['data_type']: 
-    #     print(f"{type}:\nNumber of channels: {n_channels_OBCI_2[type]}\nSampling rate: {srate_OBCI_2[type]}\n"
-    #         f"Time limit: {args_OBCI_2['max_time'] // 60} min. {args_OBCI_2['max_time'] % 60} sec.\n")
             
     user_choice("Start streaming? 'y' -> yes, 'q' -> quit\n--> ", boards = [board_OBCI_1, board_OBCI_2])
     
