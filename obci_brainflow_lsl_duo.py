@@ -1,6 +1,6 @@
 # obci_brainflow_lsl.py
 '''
-Author: Thiago Rossi Roque @thiago-roque07
+Author: Thiago Rossi Roque @thiagorroque
 Hyper OpenBCI - Use BrainFlow to read data from two OpenBCI boards simultaneously and send it as LSL streams.
 
 This program is based on scripts originally created by @retiutut and @marles77.
